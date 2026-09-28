@@ -119,6 +119,15 @@
     localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
   }
 
+  function readMaintenance() {
+    try {
+      const records = JSON.parse(localStorage.getItem(MAINTENANCE_KEY) || "[]");
+      return Array.isArray(records) ? records : [];
+    } catch (error) {
+      console.warn("Stored maintenance could not be read.", error);
+      return [];
+    }
+  }
 
   /* function to save maintenance records into local storage */
   function saveMaintenance(records) {
@@ -173,7 +182,13 @@
       saveBookings(bookings);
       return true;
     },
-
+    /* function to add maintenance records into system, returns the record after saving for admin to view */
+    addMaintenance(record) {
+      const records = readMaintenance();
+      records.push(record);
+      saveMaintenance(records);
+      return record;
+    },
 
     today: toLocalDateString
   };
