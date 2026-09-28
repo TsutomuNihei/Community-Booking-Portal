@@ -283,6 +283,78 @@
     showFeedback(elements.feedback, "success", `Booking submitted. Your reference is ${booking.id}. Status: Confirmed.`);
   }
 
+  function renderMaintenance() {
+    const records = store.getMaintenance().slice().reverse();
+    elements.maintenanceList.innerHTML = records.length
+      ? records.map((record) => {
+          const itemName = record.equipmentOption
+            ? `${record.facilityName} — ${record.equipmentOption}`
+            : record.facilityName;
+          return `
+            <article class="booking-card">
+              <div>
+                <div>
+                  <h3>${escapeHtml(itemName)}</h3>
+                  <span class="status maintenance">Maintenance</span>
+                </div>
+                <p>${escapeHtml(formatDate(record.date))} · ${escapeHtml(record.startTime)}–${escapeHtml(record.endTime)}</p>
+                <small>${escapeHtml(record.id)} · ${escapeHtml(record.notes)}</small>
+              </div>
+            </article>
+          `;
+        }).join("")
+      : '<div class="empty">No maintenance has been scheduled.</div>';
+  }
+ 
+  /* function to handle maintenance bookings, returns the record after saving for admin to view */
+  function handleMaintenance(event) {
+    event.preventDefault();
+    const formData = new FormData(elements.maintenanceForm);
+    const facility = getFacility(formData.get("facilityId"));
+    const equipmentOption = formData.get("facilityId") === "equipment"
+      ? formData.get("equipmentOption")
+      : "";
+    const date = formData.get("date");
+    const startTime = formData.get("startTime");
+    const endTime = formData.get("endTime");
+    const notes = String(formData.get("notes") || "").trim();
+    /* logical checking via if statements */
+    if (!facility || !date || !startTime || !endTime || !notes ||
+        (facility.id === "equipment" && !equipmentOption)) {
+      showFeedback(elements.maintenanceFeedback, "error", "Please complete all maintenance fields.");
+      return;
+    }
+    if (date < store.today(new Date())) {
+      showFeedback(elements.maintenanceFeedback, "error", "Maintenance cannot be scheduled in the past.");
+      return;
+    }
+    if (toHour(endTime) <= toHour(startTime)) {
+      showFeedback(elements.maintenanceFeedback, "error", "The end time must be after the start time.");
+      return;
+    }
+    if (checkConflict(facility.id, date, startTime, endTime, equipmentOption)) {
+      showFeedback(elements.maintenanceFeedback, "error", "That facility or item already has a booking or maintenance during this time.");
+      return;
+    }
+
+    const record = store.addMaintenance({
+      id: `MT-${Date.now().toString().slice(-6)}`,
+      facilityId: facility.id,
+      facilityName: facility.name,
+      equipmentOption,
+      date,
+      startTime,
+      endTime,
+      notes
+    });
+
+    elements.maintenanceForm.reset();
+    elements.maintenanceStart.value = "08:00";
+    elements.maintenanceEnd.value = "10:00";
+    updateMaintenanceEquipmentOptions();
+    renderMaintenance();
+    showFeedback(elements.maintenanceFeedback, "success", `Maintenance scheduled. Reference: ${record.id}.`);
+  }
 
   function cancelFromClick(event) {
     const button = event.target.closest("[data-cancel-id]");
