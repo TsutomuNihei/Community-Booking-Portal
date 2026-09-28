@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoastLink Facility Booking Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-content">
+      <div class="brand">
+        <div class="logo">CL</div>
+        <div>
+          <strong>CoastLink Council</strong>
+          <small>Community facility booking prototype</small>
+        </div>
+      </div>
+      <button id="staff-login-link" type="button" class="header-button">Staff login</button>
+      <button id="logout-button" type="button" class="header-button hidden">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="login-view" class="container narrow page">
+      <h1>Facility hire login</h1>
+      <div class="notice">
+        <h2>Prototype access</h2>
+        <p>
+          Use the sample hirer account to request a community facility or equipment hire.
+        </p>
+      </div>
+      <form id="student-login-form" class="form login-form" novalidate>
+        <label for="room-number">Account ID</label>
+        <input id="room-number" name="roomNumber" autocomplete="username" required placeholder="eg:67C">
+        <label for="student-password">Password</label>
+        <input id="student-password" name="password" type="password" autocomplete="current-password" required>
+        <p id="student-login-error" class="error hidden" role="alert"></p>
+        <button class="primary-button" type="submit">Log in</button>
+      </form>
+    </section>
+
+    <section id="staff-login-view" class="container narrow page hidden">
+      <button id="back-to-student-login" type="button" class="text-button">← Hirer login</button>
+      <h1>Council staff login</h1>
+      <p>Authorised venue booking officers only.</p>
+      <form id="staff-login-form" class="form login-form" novalidate>
+        <label for="staff-user">Staff user ID</label>
+        <input id="staff-user" name="user" autocomplete="username" required>
+        <label for="staff-password">Password</label>
+        <input id="staff-password" name="password" type="password" autocomplete="current-password" required>
+        <p id="staff-login-error" class="error hidden" role="alert"></p>
+        <button class="primary-button dark" type="submit">Staff login</button>
+      </form>
+    </section>
+
+    <section id="student-portal" class="hidden">
+      <nav class="tabs" aria-label="Hirer portal">
+        <div class="container">
+          <button id="booking-tab" data-student-tab="booking-panel" class="tab active">Booking</button>
+          <button id="account-tab" data-student-tab="account-panel" class="tab">Account</button>
+        </div>
+      </nav>
+
+      <div class="container page">
+        <section id="booking-panel">
+          <div class="page-heading">
+            <span>Community facilities</span>
+            <h1>Make a booking</h1>
+            <p>Indoor rooms can be booked for up to two hours. Equipment may be hired for longer.</p>
+          </div>
+
+          <form id="booking-form" class="form card" novalidate>
+            <div id="booking-feedback" class="feedback hidden" role="alert"></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="facility">Facility or equipment *</label>
+                <select id="facility" name="facilityId" required></select>
+              </div>
+              <div id="equipment-option-wrap" class="field hidden">
+                <label for="equipment-option">Equipment item *</label>
+                <select id="equipment-option" name="equipmentOption"></select>
+              </div>
+              <div class="field">
+                <label for="booking-date">Date *</label>
+                <input id="booking-date" name="date" type="date" required>
+              </div>
+              <div class="field">
+                <label for="start-time">Start time *</label>
+                <select id="start-time" name="startTime" required></select>
+              </div>
+              <div class="field">
+                <label for="end-time">End time *</label>
+                <select id="end-time" name="endTime" required></select>
+              </div>
+            </div>
+            <button type="submit" class="primary-button">Submit booking</button>
+          </form>
+
+          <div class="bookings-section">
+            <h2>Your current bookings</h2>
+            <p>Confirmed bookings can be cancelled below. Cancelled records remain visible to staff.</p>
+            <div id="student-bookings" class="booking-list"></div>
+          </div>
+        </section>
+
+        <section id="account-panel" class="hidden">
+          <h1>Account</h1>
+          <div class="account-grid">
+            <article class="card">
+              <h2>Current details</h2>
+              <dl id="account-details" class="details"></dl>
+            </article>
+            <article class="card">
+              <h2>Need help?</h2>
+              <p>Contact CoastLink Venue Bookings for account, facility, or hire assistance.</p>
+              <strong>402188473</strong>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="staff-portal" class="hidden">
+      <nav class="tabs" aria-label="Staff portal">
+        <div class="container">
+          <button data-staff-tab="staff-bookings-panel" class="tab active">Bookings</button>
+          <button data-staff-tab="maintenance-panel" class="tab">Maintenance</button>
+        </div>
+      </nav>
+
+      <div class="container page">
+        <section id="staff-bookings-panel">
+          <div class="page-heading">
+            <span>Venue booking officer</span>
+            <h1>All facility bookings</h1>
+            <p>Review, track status, or cancel bookings stored in this browser prototype.</p>
+          </div>
+          <div id="staff-bookings" class="booking-list"></div>
+        </section>
+
+        <section id="maintenance-panel" class="hidden">
+          <div class="page-heading">
+            <span>Facility administration</span>
+            <h1>Schedule maintenance</h1>
+            <p>Block a facility or equipment item while maintenance is carried out.</p>
+          </div>
+
+          <form id="maintenance-form" class="form card" novalidate>
+            <div id="maintenance-feedback" class="feedback hidden" role="alert"></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="maintenance-facility">Facility or equipment *</label>
+                <select id="maintenance-facility" name="facilityId" required></select>
+              </div>
+              <div id="maintenance-equipment-wrap" class="field hidden">
+                <label for="maintenance-equipment">Equipment item *</label>
+                <select id="maintenance-equipment" name="equipmentOption"></select>
+              </div>
+              <div class="field">
+                <label for="maintenance-date">Date *</label>
+                <input id="maintenance-date" name="date" type="date" required>
+              </div>
+              <div class="field">
+                <label for="maintenance-start">Start time *</label>
+                <select id="maintenance-start" name="startTime" required></select>
+              </div>
+              <div class="field">
+                <label for="maintenance-end">End time *</label>
+                <select id="maintenance-end" name="endTime" required></select>
+              </div>
+              <div class="field">
+                <label for="maintenance-notes">Maintenance details *</label>
+                <input id="maintenance-notes" name="notes" required placeholder="e.g. Projector inspection">
+              </div>
+            </div>
+            <button type="submit" class="primary-button">Schedule maintenance</button>
+          </form>
+
+          <div class="bookings-section">
+            <h2>Scheduled maintenance</h2>
+            <div id="maintenance-list" class="booking-list"></div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">CoastLink Community Facility and Maintenance Management System · Functional prototype</div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
